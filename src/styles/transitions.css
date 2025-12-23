@@ -1,0 +1,77 @@
+/* Short alias for smooth timing used throughout */
+:root {
+  --motion-time: 0ms;
+  --motion-ease: cubic-bezier(0.22, 0.9, 0.24, 1);
+}
+
+/*-------------
+ FADE - SIMPLE
+ --------------
+Usage:
+- Add class "fade"+"in" to fade in
+- Toggle "in" class off to fade out
+ */
+
+.fade {
+  opacity: 0;
+  transform: translateY(6px);
+  will-change: opacity, transform;
+}
+
+.fade.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --------------------
+   Cross-fade (for images/album art)
+   --------------------
+   Wrap two images stacked (position: absolute) and toggle .visible
+*/
+.cross-fade {
+  position: relative;
+}
+.cross-fade img {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.cross-fade img.visible {
+  opacity: 1;
+  position: relative; /* keep visible image in flow if needed */
+}
+
+/* --------------------
+   Quick slide-up (useful for controls)
+   -------------------- */
+.slide-up {
+  transform: translateY(10px);
+  opacity: 0;
+}
+.slide-up.in {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* --------------------
+   Progress bar subtle animation helpers
+   -------------------- */
+.progress-transition {
+  /* transition: width 220ms linear; */
+}
+
+/* --------------------
+   Utility: reduced-motion preference respect
+   -------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .fade,
+  .cross-fade img,
+  .slide-up,
+  .progress-transition {
+    transition: none !important;
+  }
+}

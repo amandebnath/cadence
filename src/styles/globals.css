@@ -1,0 +1,1317 @@
+/*------------------------------
+ GLOBAL BASE STYLES + VARIABLES
+------------------------------*/
+
+/* Reset + smoother rendering */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ---------- THEME TOKENS (dark glass + accents) ---------- */
+/* Only theme / accent variables changed here (Option B: Dark Glass) */
+:root {
+  /* glass / card bases */
+  --card-bg: rgba(18, 18, 18, 0.72); /* primary dark glass for cards */
+  --panel-bg: rgba(18, 18, 18, 0.78); /* main panel base - slightly stronger */
+  --panel-bg-alt: rgba(
+    18,
+    18,
+    18,
+    0.66
+  ); /* alt gradient stop for the main card */
+  --panel-border: rgba(
+    255,
+    255,
+    255,
+    0.06
+  ); /* subtle light border for floating effect */
+
+  /* text */
+  --text-color: #ffffff; /* primary text on dark panels */
+  --muted-color: #b3b3b3; /* secondary/muted text */
+
+  /* accent - default (overridden by .theme-* classes) */
+  --accent-color: #e313e3;
+
+  /* shadows tuned for dark glass */
+  --shadow-strong: 0 36px 80px rgba(0, 0, 0, 0.6);
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+/*==============================
+       BODY + BACKGROUND
+==============================*/
+
+body {
+  font-family: "Sansation", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+    sans-serif;
+  color: var(--text-color);
+  margin: 0;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+
+  /* background-color only as fallback */
+  background-color: var(--bg-color, #fff);
+
+  /* REMOVE: background-image, background-size, background-position, display:flex,
+     justify-content, align-items — these break the crossfade and layout */
+
+  --bg-current: url("/src/assets/img/lofi-bg.jpg"); /* Default initial image */
+  --bg-next: none;
+}
+
+/* To keep the player in the middle */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* the image layer */
+
+/* Background image layers for crossfade effect - Windows 7 style */
+/* Current visible image (base layer) */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -999;
+  background-image: var(--bg-current);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--bg-color, #1a1a1a);
+  opacity: 1;
+  transition: opacity var(--bg-crossfade-duration) ease-in-out;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+/* Incoming image (fade-in layer) */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -998;
+  background-image: var(--bg-next, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity var(--bg-crossfade-duration) ease-in-out;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+/* Ensure background is visible - debug helper */
+body::before {
+  display: block !important;
+}
+
+/* Crossfade state: current image fades out, next image fades in simultaneously */
+body.bg-crossfade::before {
+  opacity: 0 !important;
+}
+
+body.bg-crossfade::after {
+  opacity: 1 !important;
+}
+
+/* Layout containers */
+/* Main page layout */
+/* ---------- Guaranteed-center layout: center column fixed, sides flexible ---------- */
+
+.app-header {
+  position: fixed;
+  top: 1px;
+  left: 18px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+}
+
+.app-logo {
+  height: 190px;
+  width: auto;
+  opacity: 0.9;
+  user-select: none;
+  pointer-events: none;
+}
+
+.app-shell {
+  width: 100%; /* full-viewport width */
+  margin: 0; /* no outer auto-centering — center via grid columns below */
+  display: grid;
+  /* Make the middle column exactly the player width (720px) so it's centered in the viewport */
+  grid-template-columns: 1fr 720px 1fr;
+  gap: 28px;
+  height: 100vh;
+  padding: 28px;
+  box-sizing: border-box;
+  align-items: start;
+}
+
+.app-footer {
+  /* Fixed bottom center for persistent visibility */
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.78); /* higher contrast for visibility */
+  background: rgba(0, 0, 0, 0.36); /* subtle card background for legibility */
+  padding: 8px 12px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+
+  pointer-events: auto;
+  user-select: none;
+}
+
+/* Responsive tweak for small screens */
+@media (max-width: 520px) {
+  .app-footer {
+    bottom: 12px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+/* card headings */
+.card-heading {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-color);
+  position: relative;
+  padding-left: 20px;
+  padding-bottom: 6px;
+}
+
+/* vertical colored block to left of heading (standing block) */
+.card-heading::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 8px;
+  height: 26px;
+  border-radius: 4px;
+  background: var(--accent-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* left panel sits inside the left flexible column but is visually a compact card */
+.left-column {
+  width: 240px; /* actual panel width for content */
+  justify-self: start; /* pin the panel to the left edge of the left column */
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--panel-bg);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 8px 30px rgba(16, 24, 40, 0.04);
+  border: 1px solid var(--panel-border);
+}
+
+/* center column: center the content horizontally (player will be exactly centered in viewport) */
+.center-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centers player horizontally inside the fixed-width center column */
+  justify-content: flex-start;
+  padding-top: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  justify-self: center; /* ensure center column is centered in the grid */
+}
+
+/* right panel sits inside the right flexible column and is pinned to the right */
+.right-column {
+  width: 300px;
+  justify-self: end; /* pin to right edge of the right column */
+  align-self: start;
+  padding-top: 48px;
+  box-sizing: border-box;
+}
+
+/* keep player card margins reset so no extra offset */
+.center-column .player-root {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* -------------------------
+   Main single-card layout (glassy)
+   ------------------------- */
+
+.main-card-outer {
+  display: flex;
+  justify-content: center; /* keep the whole card centered in viewport */
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 28px 16px; /* outer breathing room */
+}
+
+/* main card uses dark glass tokens */
+.main-card {
+  display: grid;
+  grid-template-columns: 260px 1fr 240px;
+  gap: 26px;
+  width: 100%;
+  max-width: 1220px;
+  /* dark glass gradient using panel tokens */
+  background: linear-gradient(180deg, var(--panel-bg), var(--panel-bg-alt));
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow: var(--shadow-strong);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  border: 1px solid var(--panel-border);
+  align-items: start;
+}
+
+/* LEFT column (genres + track list) */
+.card-left {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 6px;
+  align-self: start;
+}
+
+/* small styling for track list */
+.track-list {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  );
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--panel-border);
+  min-height: 250px;
+  max-height: 300px;
+}
+.track-list h4 {
+  margin: 0 0 8px 0;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.track-list ol {
+  margin: 0;
+  padding-left: 18px;
+  list-style: decimal;
+}
+
+.track-list li {
+  margin-bottom: 8px;
+}
+
+.track-list li button {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--muted-color);
+}
+
+/* Remove white/outline visuals when a track button is focused/selected */
+.track-list li button:focus,
+.track-list li button:active {
+  outline: none; /* UPDATED */
+  box-shadow: none; /* UPDATED */
+}
+
+.track-list li.active button {
+  color: var(--text-color);
+  font-weight: 700;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  text-shadow: 0 0 8px var(--text-color), 0 0 16px var(--text-color),
+    0 0 24px var(--text-color);
+}
+
+/* CENTER column (player) */
+.card-center {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center; /* player will center inside middle column */
+  padding: 6px 18px;
+  min-width: 0;
+}
+
+/* the central player area uses dark glass tokens */
+.card-center .player-root {
+  width: 100%;
+  height: 460px;
+  max-width: 760px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  );
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 22px;
+}
+
+/* progress time + muted colors */
+.card-center .progress-time,
+.card-center .track-info div:nth-child(2) {
+  color: var(--muted-color);
+}
+
+.card-center .player-root .album-art {
+  flex: 0 0 240px;
+}
+.card-center .player-root .track-info {
+  flex: 1;
+}
+
+/* small credits line */
+.music-credits {
+  margin-top: 8px;
+  width: 100%;
+  text-align: left;
+  color: rgba(34, 34, 34, 0.6);
+  font-size: 13px;
+}
+
+/* RIGHT column (fact box) */
+.card-right {
+  width: 240px;
+  max-width: 240px;
+  align-self: start;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-sizing: border-box;
+}
+
+.card-right > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* RESPONSIVE: collapse to single column under 920px */
+@media (max-width: 920px) {
+  .main-card {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .card-left,
+  .card-right {
+    order: 2; /* move left/right under player */
+    width: 100%;
+  }
+  .card-center {
+    order: 1;
+    width: 100%;
+  }
+  .track-list ol {
+    padding-left: 14px;
+  }
+}
+
+/*-------------------------
+ THEME VARIABLES - DEFAULT
+-------------------------*/
+
+:root {
+  --bg-color: #ffffff;
+  --bg-crossfade-duration: 2500ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after {
+    transition: none !important;
+  }
+}
+
+/*------------
+ GENRE THEMES
+------------*/
+
+/* LO-FI THEME - only update accent/token overrides, background handled by CSS variables */
+.theme-lofi {
+  --bg-color: #e8e2f1;
+  --text-color: #ffffff;
+  --accent-color: #bf11bf; /* bright magenta */
+}
+
+/* CLASSICAL THEME */
+.theme-classical {
+  --bg-color: #f3e8d2;
+  --text-color: #ffffff;
+  --accent-color: #7b3f00; /* brown */
+}
+
+/* BLUES THEME */
+.theme-blues {
+  --bg-color: #d8e6f5;
+  --text-color: #ffffff;
+  --accent-color: #1779ba; /* blue */
+}
+
+/* -------
+  BUTTONS 
+--------*/
+
+.genre-buttons button {
+  margin-right: 10px;
+  padding: 8px 14px;
+  border: none;
+  /* glass look */
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  ); /* white default for visibility */
+  color: var(--text-color);
+  border-radius: 6px;
+  cursor: pointer;
+  /* transition: opacity 0.18s ease, transform 0.12s ease; */
+  box-shadow: var(--shadow-soft);
+}
+
+.genre-buttons button:hover {
+  transform: translateY(-2px);
+}
+
+/* ----------------
+   Genre selector
+   -------------- */
+
+/* Use dark glass panels for selector, but keep internal buttons white */
+.genre-selector {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  );
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--panel-border);
+  color: var(--text-color);
+}
+
+/* Title inside the sidebar */
+.genre-selector h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: var(--text-color);
+}
+
+.genre-selector,
+.track-list {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Buttons container: vertical stack */
+.genre-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Individual genre button */
+.genre-button {
+  width: 100%;
+  text-align: left;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  ); /* white default */
+  color: var(--text-color);
+  font-weight: 400;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  /* transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease; */
+}
+
+/* Hover / focus state */
+.genre-button:hover,
+.genre-button:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.45);
+  outline: none;
+}
+
+/* Active/selected state - heading/active uses accent color */
+.genre-button.active,
+.genre-button[aria-pressed="true"] {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.04)
+  );
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+  color: var(--accent-color);
+  transform: translateY(-1px) scale(1.01);
+  font-weight: 700;
+}
+
+/* Make the left column feel like a panel */
+.left-column {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  );
+  border-radius: 12px;
+  padding: 18px;
+  align-self: start;
+  min-height: 220px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--panel-border);
+}
+
+/*@media (max-width: 920px) {
+  .main-card {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .card-left,
+  .card-right {
+    order: 2;
+    width: 100%;
+  }
+  .card-center {
+    order: 1;
+    width: 100%;
+  }
+  .track-list ol {
+    padding-left: 14px;
+  }
+}
+
+/* -------------------------
+   Center Player card & album art
+   ------------------------- */
+
+.center-column {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 28px;
+}
+
+/* Player card wrapper - dark glass */
+.player-root {
+  width: 640px;
+  max-width: calc(100% - 40px);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  );
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  border: 1px solid var(--panel-border);
+}
+
+/* Album art */
+.album-art img {
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 6px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Track info area */
+.track-info {
+  max-width: 360px;
+}
+
+/* Track title & artist */
+.track-info .title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-color);
+}
+.track-info .artist {
+  color: var(--muted-color);
+  margin-bottom: 14px;
+}
+
+/* Controls row */
+.controls {
+  margin-top: 18px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: flex-start;
+  line-height: 0; /* Fix gaps on top/bottom */
+  font-size: 0; /* Remove font-size spacing */
+}
+
+/* ==============================
+   FORCE SVG ICON VISIBILITY
+   ============================== */
+
+/* Force all SVG shapes inside control buttons to render */
+.controls svg,
+.volume-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* THIS IS THE KEY FIX */
+.controls svg *,
+.volume-btn svg * {
+  stroke: currentColor !important;
+  fill: currentColor !important;
+  stroke-width: 2.2;
+}
+
+/* vector-effect moved to inline SVG attributes (vectorEffect) on shapes to avoid validator lint errors */
+
+/* Neon glow on hover */
+.controls button:hover svg *,
+.volume-btn:hover svg * {
+  filter: drop-shadow(0 0 6px var(--accent-color))
+    drop-shadow(0 0 14px var(--accent-color))
+    drop-shadow(0 0 28px var(--accent-color));
+}
+
+.controls button:active svg *,
+.volume-btn:active svg * {
+  transform: scale(0.92);
+}
+
+/* -------- Volume Row -------- */
+.volume-row {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Mute button */
+.volume-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.04)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.volume-btn .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--accent-color);
+}
+
+/* Volume slider */
+.volume-slider {
+  flex: 1;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+}
+
+/* Filled track */
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-color);
+}
+
+/* Firefox */
+.volume-slider::-moz-range-thumb {
+  background: var(--accent-color);
+  border: none;
+}
+
+/* ---------- Player circular glass controls (Button Code Added) ---------- */
+.controls button {
+  /* layout + glass base shared by prev/play/next */
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px; /* circular */
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.04)
+  );
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  color: var(--text-color);
+  cursor: pointer;
+  /* transition: transform 160ms cubic-bezier(0.2, 0.9, 0.2, 1), box-shadow 220ms ease, background 160ms ease; */
+  padding: 0; /* use size, not padding */
+  margin: 0; /* remove any default margins */
+  outline: none; /* remove browser focus ring */
+  background-clip: border-box; /* Fill all the way to the border edge */
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform, box-shadow;
+  line-height: 0; /* Fix gaps on top/bottom */
+  vertical-align: middle; /* Ensure proper alignment */
+  overflow: hidden; /* Ensure perfect circular finish */
+  box-sizing: border-box; /* Include border in width/height */
+}
+
+/* slightly larger central play button - keeps glassy design */
+.controls button.play {
+  width: 56px;
+  height: 56px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+  /* Inherits all glassy styles from .controls button above */
+}
+
+/* apply accent color to SVG icon inside the button (use svgs with currentColor) */
+.controls button .icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  color: var(--accent-color); /* icon color */
+  flex-shrink: 0; /* Prevent icon from shrinking */
+  margin: 0; /* Remove any default margins */
+}
+
+/* SVG visibility */
+.controls svg,
+.volume-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  stroke: currentColor;
+  display: block; /* Remove inline spacing */
+  margin: 0; /* Remove any default margins */
+  padding: 0; /* Remove any default padding */
+}
+
+/* ===== Hover glow ===== */
+.controls button:hover {
+  transform: translateY(-3px); /* slight lift */
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 18px var(--accent-color); /* colored glow using accent token */
+}
+
+/* Neon glow */
+.controls button:hover svg,
+.volume-btn:hover svg {
+  filter: drop-shadow(0 0 8px var(--accent-color))
+    drop-shadow(0 0 18px var(--accent-color));
+}
+
+/* Active */
+.controls button:active svg {
+  transform: scale(0.95);
+}
+
+/* Playing state */
+.controls button.play.playing svg {
+  filter: drop-shadow(0 0 12px var(--accent-color))
+    drop-shadow(0 0 26px var(--accent-color));
+}
+
+/* ===== Focus state: no white border, subtle accessible ring ===== */
+.controls button:focus {
+  outline: none;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45),
+    0 0 0 4px rgba(255, 255, 255, 0.02); /* very subtle focus ring instead of white outline */
+}
+
+/* ===== Press/active animation ===== */
+.controls button:active {
+  transform: translateY(1px) scale(0.985); /* press in */
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45); /* reduced shadow while pressed */
+}
+
+/* ===== Playing state: keeps glassy design, no accent background ===== */
+/* Playing state inherits glassy design; additional visual details handled by SVG rule above */
+
+/* Play button keeps the same glassy design as prev/next buttons */
+/* The .play.playing state below handles the active playing state */
+
+/* Disabled button visual */
+.controls button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* make the entire center area feel vertically balanced */
+.player-root > div:last-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* responsiveness: scale down nicely for small screens */
+@media (max-width: 900px) {
+  .player-root {
+    gap: 18px;
+    padding: 20px;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+  .album-art {
+    width: 180px;
+    height: 180px;
+    flex: 0 0 180px;
+  }
+  .track-info {
+    max-width: 100%;
+    text-align: center;
+  }
+  .controls {
+    justify-content: center;
+  }
+  .progress-bar {
+    height: 14px;
+  }
+  .progress-bar div {
+    transition: width 160ms linear;
+  }
+}
+
+/* -------------------------
+   Right FactBox styling
+   ------------------------- */
+
+/* Keep fact-card heights as requested, switch visual to dark glass */
+.fact-card {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  );
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--panel-border);
+  min-height: 260px;
+  max-height: 520px;
+  overflow: auto;
+}
+
+.right-column {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-top: 28px;
+}
+
+/* factbox uses dark glass but keep sizing untouched */
+.factbox {
+  width: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  );
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--panel-border);
+}
+
+.card-right .factbox,
+.card-right > * {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  );
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--panel-border);
+  color: var(--text-color);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.right-column h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+/* make the fact text readable */
+.factbox p {
+  line-height: 1.5;
+  color: var(--text-color);
+  font-size: 15px;
+}
+
+/* responsive fallback */
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr; /* stack for narrow screens */
+    padding: 12px;
+  }
+  .left-column {
+    order: 1;
+    width: auto;
+  }
+  .center-column {
+    order: 2;
+    width: 100%;
+  }
+  .right-column {
+    order: 3;
+    width: 100%;
+  }
+  .player-root {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+  .album-art img {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+/* -------------------------
+   Music Credits Card
+   ------------------------- */
+
+.credits-card {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  );
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--panel-border);
+  min-height: 180px;
+  max-height: 120px;
+  font-size: 13px;
+  align-items: center;
+}
+
+.credits-content small {
+  color: var(--muted-color);
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+/* ------------------------------------
+   Player: polished card + typography
+   --------------------------------- */
+
+/* Soft glass panel effect for the player card */
+.player-root {
+  width: 720px;
+  max-width: calc(100% - 48px);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.82),
+    rgba(255, 255, 255, 0.72)
+  );
+  backdrop-filter: blur(6px) saturate(110%);
+  -webkit-backdrop-filter: blur(6px) saturate(110%);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 24px 60px rgba(16, 24, 40, 0.08);
+  display: flex;
+  gap: 26px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  /* transition: transform 220ms ease, box-shadow 220ms ease; */
+}
+
+/* subtle lift on hover (desktop) */
+.player-root:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 80px rgba(16, 24, 40, 0.1);
+}
+
+/* Album art container refinement - subtle lighter inset */
+.album-art {
+  width: 240px;
+  height: 240px;
+  flex: 0 0 240px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+/* album img uses full cover, with soft border */
+.album-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+  /* transition: transform 420ms cubic-bezier(0.22, 0.9, 0.24, 1); */
+}
+.player-root.playing .album-art img {
+  transform: scale(1.02);
+}
+
+/* info column typography */
+.track-info {
+  max-width: 420px;
+}
+.track-info div:first-child {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-color);
+}
+.track-info div:nth-child(2) {
+  font-size: 14px;
+  color: var(--muted-color);
+}
+
+/* progress bar refinements - darker track bar to suit dark glass */
+.progress-bar {
+  margin-top: 14px;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.progress-bar > div {
+  height: 100%;
+  background: var(--accent-color);
+  /* transition: width 200ms linear; */
+}
+
+/* time labels cleaner */
+.progress-time {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted-color);
+}
+
+/* controls: big central play, compact prev/next */
+/* (actual button visuals handled by the circular glass rules above) */
+
+/* disabled button visual */
+.controls button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* make the entire center area feel vertically balanced */
+.player-root > div:last-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* responsiveness: scale down nicely for small screens */
+@media (max-width: 900px) {
+  .player-root {
+    gap: 18px;
+    padding: 20px;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+  .album-art {
+    width: 180px;
+    height: 180px;
+    flex: 0 0 180px;
+  }
+  .track-info {
+    max-width: 100%;
+    text-align: center;
+  }
+  .controls {
+    justify-content: center;
+  }
+}
+
+/* ---------- RESPONSIVE ADAPTATIONS ---------- */
+
+/* Phones up to 460px */
+@media (max-width: 460px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+    height: auto;
+  }
+  .left-column,
+  .center-column,
+  .right-column {
+    padding: 12px;
+    width: 100%;
+  }
+  .left-column {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    padding: 10px;
+    background: transparent;
+    box-shadow: none;
+    min-height: auto;
+  }
+  .genre-buttons {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 10px;
+  }
+  .player-root {
+    width: 100%;
+    padding: 18px;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .album-art img {
+    width: 160px;
+    height: 160px;
+    border-radius: 10px;
+  }
+  .controls button,
+  .controls .icon-button,
+  .player-root button {
+    min-width: 48px;
+    min-height: 44px;
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+  .progress-bar {
+    height: 14px;
+  }
+  .progress-bar div {
+    transition: width 160ms linear;
+  }
+  .right-column {
+    padding: 12px;
+  }
+}
+
+/* Ensure control buttons define icon color */
+.controls button,
+.volume-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(0, 0, 0, 0.6)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  padding: 0;
+  color: var(--accent-color); /* FIX: gives SVG a color */
+}
+
+/* Tablets up to 1024px */
+@media (max-width: 1024px) and (min-width: 461px) {
+  .app-shell {
+    grid-template-columns: 200px 1fr;
+    grid-auto-rows: auto;
+    gap: 16px;
+    padding: 16px;
+  }
+  .right-column {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+  .player-root {
+    width: 100%;
+    padding: 22px;
+  }
+  .album-art img {
+    width: 200px;
+    height: 200px;
+  }
+  .genre-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Larger desktops keep 3-column layout */
+@media (min-width: 1025px) {
+  .app-shell {
+    padding: 24px;
+  }
+  .player-root {
+    width: 640px;
+  }
+}
