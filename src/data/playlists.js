@@ -15,16 +15,25 @@
 import lofi1 from "../assets/audio/lofi/lofi-01.mp3";
 import lofi2 from "../assets/audio/lofi/lofi-02.mp3";
 import lofi3 from "../assets/audio/lofi/lofi-03.mp3";
+import lofiThumb1 from "../assets/audio/lofi/lofi-thumb-1.jpg";
+import lofiThumb2 from "../assets/audio/lofi/lofi-thumb-2.jpg";
+import lofiThumb3 from "../assets/audio/lofi/lofi-thumb-3.jpg";
 
 // Classical
 import classical1 from "../assets/audio/classical/classical-01.mp3";
 import classical2 from "../assets/audio/classical/classical-02.mp3";
 import classical3 from "../assets/audio/classical/classical-03.mp3";
+import classicalThumb1 from "../assets/audio/classical/classical-thumb-1.jpg";
+import classicalThumb2 from "../assets/audio/classical/classical-thumb-2.jpg";
+import classicalThumb3 from "../assets/audio/classical/classical-thumb-3.jpg";
 
 // Blues
 import blues1 from "../assets/audio/blues/blues-01.mp3";
 import blues2 from "../assets/audio/blues/blues-02.mp3";
 import blues3 from "../assets/audio/blues/blues-03.mp3";
+import bluesThumb1 from "../assets/audio/blues/blues-thumb-1.jpg";
+import bluesThumb2 from "../assets/audio/blues/blues-thumb-2.jpg";
+import bluesThumb3 from "../assets/audio/blues/blues-thumb-3.jpg";
 
 export const playlists = {
   lofi: [
@@ -36,7 +45,7 @@ export const playlists = {
       license:
         "Attribution-NonCommercial-NoDerivatives 4.0 International License.",
       src: lofi1,
-      thumb: "/src/assets/audio/lofi/lofi-thumb-1.jpg",
+      thumb: lofiThumb1,
     },
 
     {
@@ -47,7 +56,7 @@ export const playlists = {
       license:
         "Attribution-NonCommercial-NoDerivatives 4.0 International License.",
       src: lofi2,
-      thumb: "/src/assets/audio/lofi/lofi-thumb-2.jpg",
+      thumb: lofiThumb2,
     },
 
     {
@@ -57,7 +66,7 @@ export const playlists = {
       album: "Lo-Fi And Beyond",
       license: "Attribution 4.0 International License.",
       src: lofi3,
-      thumb: "/src/assets/audio/lofi/lofi-thumb-3.jpg",
+      thumb: lofiThumb3,
     },
   ],
 
@@ -69,7 +78,7 @@ export const playlists = {
       album: "Orchestra",
       license: "Attribution 4.0 International License.",
       src: classical1,
-      thumb: "/src/assets/audio/classical/classical-thumb-1.jpg",
+      thumb: classicalThumb1,
     },
 
     {
@@ -79,7 +88,7 @@ export const playlists = {
       album: "Empty Orchestra",
       license: "Attribution-NonCommercial License.",
       src: classical2,
-      thumb: "/src/assets/audio/classical/classical-thumb-2.jpg",
+      thumb: classicalThumb2,
     },
 
     {
@@ -89,7 +98,7 @@ export const playlists = {
       album: "Empty Orchestra",
       license: "Attribution-NonCommercial License.",
       src: classical3,
-      thumb: "/src/assets/audio/classical/classical-thumb-3.jpg",
+      thumb: classicalThumb3,
     },
   ],
 
@@ -102,7 +111,7 @@ export const playlists = {
       license:
         "Attribution-NonCommercial-NoDerivatives 4.0 International License.",
       src: blues1,
-      thumb: "/src/assets/audio/blues/blues-thumb-1.jpg",
+      thumb: bluesThumb1,
     },
 
     {
@@ -112,7 +121,7 @@ export const playlists = {
       album: "Blues Sampler",
       license: "Creative Commons Attribution License.",
       src: blues2,
-      thumb: "/src/assets/audio/blues/blues-thumb-2.jpg",
+      thumb: bluesThumb2,
     },
 
     {
@@ -122,7 +131,7 @@ export const playlists = {
       album: "Single",
       license: "Attribution-NonCommercial License.",
       src: blues3,
-      thumb: "/src/assets/audio/blues/blues-thumb-3.jpg",
+      thumb: bluesThumb3,
     },
   ],
 };

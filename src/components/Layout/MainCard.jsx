@@ -58,7 +58,7 @@ export default function MainCard(props) {
     <div className="main-card-outer">
       <header className="app-header">
         <img
-          src="/src/assets/logo/cadence-logo.png"
+          src="/cadence-logo.png"
           alt="Cadence - Music For Focus"
           className="app-logo"
           draggable={false}
