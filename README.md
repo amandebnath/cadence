@@ -15,6 +15,13 @@ This is the first stable release of Cadence.
 
 ---
 
+## 🌐 Live Demo
+
+URL: [Click Here](https://cadence-rho.vercel.app/)
+
+
+---
+
 ## ✨ Features
 
 - 🎶 Genre-based playlists (Lo-Fi, Classical, Blues)
