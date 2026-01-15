@@ -24,7 +24,7 @@ URL: [Click Here](https://cadence-rho.vercel.app/)
 
 ## ✨ Features
 
-- 🎶 Genre-based playlists (Lo-Fi, Classical, Blues)
+- 🎶 Genre-based playlists (Lo-Fi, Classical & Blues)
 - 🌈 Dynamic accent themes per genre
 - 🎛️ Custom audio player (Play / Pause / Next / Prev)
 - 🔄 Smooth album-art crossfade transitions
